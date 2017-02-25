@@ -1,6 +1,17 @@
 import random
 
 
+def increase_and_multiply():
+    multiplier = random.randint(-9, 9)
+    step = random.choice(list(range(-3, -1)) + list(range(1, 3)))
+
+    def func(seq):
+        length = len(seq)
+        new = seq[-1] * (multiplier + step)
+        return new
+    return func
+
+
 def multiply_by():
     multiplier = random.choice(list(range(-9, 0)) + list(range(2, 10)))
 
@@ -19,16 +30,12 @@ def add_to():
 
 def sum_last_two():
     def func(seq):
-        if len(seq) == 1:
-            return seq[0] + random.randint(1, 3)
         return seq[-1] + seq[-2]
     return func
 
 
 def multiply_last_two():
     def func(seq):
-        if len(seq) == 1:
-            return seq[0] + random.randint(1, 3)
         return seq[-1] * seq[-2]
     return func
 
@@ -38,12 +45,17 @@ def sum_of_all():
         return sum(seq)
     return func
 
-transforms = [multiply_by, add_to, sum_last_two, multiply_last_two, sum_of_all]
+transforms = [multiply_by, add_to]
+seq_transforms = [sum_last_two, multiply_last_two, sum_of_all]
 
 
 def build_puzzle():
-    first = random.choice(transforms)()
-    second = random.choice(transforms)()
+    if random.randint(0, 100) == 50:
+        first = increase_and_multiply()
+        second = first
+    else:
+        first = random.choice(transforms)()
+        second = random.choice(transforms + seq_transforms)()
     sequence = [random.randint(-10, 10)]
     order = [first, second, first, second, first]
     for step in order:
@@ -62,8 +74,9 @@ def test_human():
         ', '.join(map(str, puzzle))
     ))
     attempt = input('>>>')
-    if answer == int(attempt):
-        print('Winner!')
+    while answer != int(attempt):
+        attempt = input('Wrong! Try Again: ')
+    print('Winner!')
 
 if __name__ == "__main__":
     test_human()
